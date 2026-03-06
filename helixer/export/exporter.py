@@ -6,6 +6,7 @@ import numpy as np
 import sqlite3
 import datetime
 import subprocess
+from tqdm import tqdm
 from importlib.metadata import version
 
 import geenuff
@@ -112,11 +113,16 @@ class HelixerFastaToH5Controller(HelixerExportControllerBase):
         assert write_by >= chunk_size, ("when specifying '--write-by' it needs to be larger than "
                                         "or equal to '--subsequence-length'")
         fasta_importer = FastaImporter(None)
-        fasta_seqs = fasta_importer.parse_fasta(self.input_path)
+        #fasta_seqs = fasta_importer.parse_fasta(self.input_path)
+        #self.h5 = h5py.File(self.output_path, 'w')
+        # We wrap fasta_seqs in a list to get the total count for the progress bar
+        print("Loading FASTA sequences...")
+        fasta_seqs = list(fasta_importer.parse_fasta(self.input_path))
         self.h5 = h5py.File(self.output_path, 'w')
 
         seqids = []
-        for i, (seqid, seq) in enumerate(fasta_seqs):
+        #for i, (seqid, seq) in enumerate(fasta_seqs):
+        for i, (seqid, seq) in enumerate(tqdm(fasta_seqs, desc="Exporting to H5")): # Wrap the loop with tqdm
             if seqid in seqids:
                 raise ValueError(f"found duplicate seqid '{seqid}' in fasta file '{self.input_path}', "
                                  f"please remove or rename it")

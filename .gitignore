@@ -143,3 +143,15 @@ venv.bak/
 
 # venv
 ./venv
+
+# Downloaded models
+models/
+
+# examples
+examples/
+
+# temp files
+helixer_temp
+.DS_Store
+Arctocephalus_townsendi_v1.gff3
+helixer_post_bin
